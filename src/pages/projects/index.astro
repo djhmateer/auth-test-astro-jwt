@@ -6,8 +6,19 @@ if (!Astro.session) throw new Error('Session not available');
 
 // Check authentication using session
 const isAuthenticated = await Astro.session.get('authenticated');
+
+// Get session ID from cookie to detect expired sessions
+const sessionCookie = Astro.request.headers.get('cookie');
+const hasSessionCookie = sessionCookie && sessionCookie.includes('astro-session');
+
 if (!isAuthenticated) {
-	console.log('Unauthorized access attempt to /projects');
+	if (hasSessionCookie) {
+		// User has session cookie but session.get() returned null = expired session
+		console.log('User has a session cookie but session.get() returned null so session expired - redirecting to login');
+	} else {
+		// No session cookie = first visit or no login attempt
+		console.log('No session found - redirecting to login');
+	}
 	return Astro.redirect('/login', 302);
 }
 
