@@ -1,11 +1,36 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 
+// Get client IP for logging (with fallback)
+const clientIP = Astro.request.headers.get('x-forwarded-for') ||
+				 Astro.request.headers.get('x-real-ip') ||
+				 'unknown';
+
 // Check authentication using session
 const isAuthenticated = await Astro.session.get('authenticated');
 if (!isAuthenticated) {
+	// Log unauthorized access attempt
+	console.log(JSON.stringify({
+		timestamp: new Date().toISOString(),
+		event: 'AUTH_FAILURE',
+		action: 'access_denied',
+		route: '/projects',
+		clientIP,
+		message: 'Unauthorized access attempt to protected route'
+	}));
+
 	return Astro.redirect('/login', 302);
 }
+
+// Log successful access to protected route
+console.log(JSON.stringify({
+	timestamp: new Date().toISOString(),
+	event: 'ACCESS_SUCCESS',
+	action: 'route_access',
+	route: '/projects',
+	clientIP,
+	message: 'Authenticated user accessed protected route'
+}));
 
 // Get login time from session
 const loginTime = await Astro.session.get('loginTime');
