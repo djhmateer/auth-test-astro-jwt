@@ -1,49 +1,27 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import { checkAuthentication } from '../../utils/auth.ts';
 
-// TypeScript guard: Prevent compiler warnings about undefined session
-if (!Astro.session) throw new Error('Session not available');
+const authResult = await checkAuthentication(Astro);
 
-// Check authentication using session
-const isAuthenticated = await Astro.session.get('authenticated');
-if (!isAuthenticated) {
-	console.log('Unauthorized access attempt to /projects/project2');
-	return Astro.redirect('/login', 302);
+// If authentication failed, checkAuthentication returns a Response (redirect)
+if (authResult instanceof Response) {
+	return authResult;
 }
 
 console.log('User accessed /projects/project2 page');
+
+const { loginTime, currentTime } = authResult;
 ---
 
 <Layout>
 	<main>
 		<h1>Project 2</h1>
 		<p>This is a sample protected project page demonstrating session-based authentication.</p>
+		<p><strong>Server time (UTC):</strong> {currentTime}</p>
+		<p><strong>Client time:</strong> <span id="client-time">Loading...</span></p>
+		{loginTime && <p><strong>Login time (UTC):</strong> {new Date(loginTime).toLocaleString()}</p>}
 
-		<div class="content">
-			<h2>Project Details</h2>
-			<ul>
-				<li><strong>Project Name:</strong> Sample Project 2</li>
-				<li><strong>Status:</strong> In Development</li>
-				<li><strong>Technology:</strong> Astro + Session Auth</li>
-				<li><strong>Created:</strong> 2025</li>
-			</ul>
-
-			<h2>Features</h2>
-			<div class="features">
-				<div class="feature">
-					<h3>🔒 Authentication</h3>
-					<p>Protected by server-side session authentication</p>
-				</div>
-				<div class="feature">
-					<h3>⏱️ Session Tracking</h3>
-					<p>Monitors user access and session expiration</p>
-				</div>
-				<div class="feature">
-					<h3>⚡ Fast Loading</h3>
-					<p>Server-side rendered with Astro for optimal performance</p>
-				</div>
-			</div>
-		</div>
 
 		<div class="actions">
 			<a href="/projects">← Back to Projects</a>
@@ -150,3 +128,10 @@ console.log('User accessed /projects/project2 page');
 		background: #b91c1c;
 	}
 </style>
+
+<script>
+	const clientTimeElement = document.getElementById('client-time');
+	if (clientTimeElement) {
+		clientTimeElement.textContent = new Date().toLocaleString();
+	}
+</script>

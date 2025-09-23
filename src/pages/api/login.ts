@@ -22,13 +22,14 @@ import type { APIRoute } from 'astro';
  * - Responds with 302 redirect to /projects (success) or /login?error=invalid (failure)
  * - Browser follows redirect automatically
  */
-export const POST: APIRoute = async ({ request, session }) => {
+export const POST: APIRoute = async ({ request, session, url }) => {
 	// TypeScript guard: Prevent compiler warnings about undefined session
 	if (!session) throw new Error('Session not available');
 	// Extract password from the form submission
 	// The login form POSTs here with Content-Type: application/x-www-form-urlencoded
 	const formData = await request.formData();
 	const password = formData.get('password') as string;
+	const redirectTo = formData.get('redirect') as string;
 
 	// Simple password validation (hardcoded for demo purposes)
 	// In production, this would hash the password and compare against a database
@@ -44,25 +45,27 @@ export const POST: APIRoute = async ({ request, session }) => {
 
 		console.log('User successfully logged in');
 
-		// SUCCESS: Redirect to protected area
-		// Browser receives 302 redirect and navigates to /projects
+		// SUCCESS: Redirect to originally requested page or default to /projects
+		// Browser receives 302 redirect and navigates to the target page
 		// Session cookie is automatically included in subsequent requests
+		const targetLocation = redirectTo && redirectTo.startsWith('/') ? redirectTo : '/projects';
 		return new Response(null, {
 			status: 302,
 			headers: {
-				'Location': '/projects',
+				'Location': targetLocation,
 			},
 		});
 	}
 
 	console.log('Invalid password attempt');
 
-	// FAILURE: Redirect back to login with error parameter
-	// This allows the login page to show an error message
+	// FAILURE: Redirect back to login with error parameter, preserving redirect target
+	// This allows the login page to show an error message and maintain the redirect flow
+	const errorLocation = redirectTo ? `/login?error=invalid&redirect=${encodeURIComponent(redirectTo)}` : '/login?error=invalid';
 	return new Response(null, {
 		status: 302,
 		headers: {
-			'Location': '/login?error=invalid',
+			'Location': errorLocation,
 		},
 	});
 };

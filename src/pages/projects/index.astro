@@ -1,32 +1,17 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import { checkAuthentication } from '../../utils/auth.ts';
 
-// TypeScript guard: Prevent compiler warnings about undefined session
-if (!Astro.session) throw new Error('Session not available');
+const authResult = await checkAuthentication(Astro);
 
-// Check authentication using session
-const isAuthenticated = await Astro.session.get('authenticated');
-
-// Get session ID from cookie to detect expired sessions
-const sessionCookie = Astro.request.headers.get('cookie');
-const hasSessionCookie = sessionCookie && sessionCookie.includes('astro-session');
-
-if (!isAuthenticated) {
-	if (hasSessionCookie) {
-		// User has session cookie but session.get() returned null = expired session
-		console.log('User has a session cookie but session.get() returned null so session expired - redirecting to login');
-	} else {
-		// No session cookie = first visit or no login attempt
-		console.log('No session found - redirecting to login');
-	}
-	return Astro.redirect('/login', 302);
+// If authentication failed, checkAuthentication returns a Response (redirect)
+if (authResult instanceof Response) {
+	return authResult;
 }
 
 console.log('User accessed /projects page');
 
-// Get login time from session
-const loginTime = await Astro.session.get('loginTime');
-const currentTime = new Date().toLocaleString();
+const { loginTime, currentTime } = authResult;
 ---
 
 <Layout>
@@ -96,5 +81,8 @@ const currentTime = new Date().toLocaleString();
 </style>
 
 <script>
-	document.getElementById('client-time').textContent = new Date().toLocaleString();
+	const clientTimeElement = document.getElementById('client-time');
+	if (clientTimeElement) {
+		clientTimeElement.textContent = new Date().toLocaleString();
+	}
 </script>

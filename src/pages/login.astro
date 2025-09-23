@@ -3,16 +3,19 @@ import Layout from '../layouts/Layout.astro';
 
 let errorMessage = '';
 
-// Check for error parameter from redirect
+// Check for error parameter and redirect target from URL
 const url = new URL(Astro.request.url);
 if (url.searchParams.get('error') === 'invalid') {
 	errorMessage = 'Invalid password';
 }
 
+const redirectTo = url.searchParams.get('redirect') || '';
+
 // Check if already authenticated
 const isAuthenticated = await Astro.session.get('authenticated');
 if (isAuthenticated) {
-	return Astro.redirect('/projects', 302);
+	const targetLocation = redirectTo && redirectTo.startsWith('/') ? redirectTo : '/projects';
+	return Astro.redirect(targetLocation, 302);
 }
 ---
 
@@ -29,6 +32,7 @@ if (isAuthenticated) {
 		)}
 
 		<form method="POST" action="/api/login">
+			{redirectTo && <input type="hidden" name="redirect" value={redirectTo} />}
 			<div class="form-group">
 				<label for="password">Password:</label>
 				<input
