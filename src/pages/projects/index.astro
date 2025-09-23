@@ -1,6 +1,14 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 
+// Check authentication using session
+const isAuthenticated = await Astro.session.get('authenticated');
+if (!isAuthenticated) {
+	return Astro.redirect('/login', 302);
+}
+
+// Get login time from session
+const loginTime = await Astro.session.get('loginTime');
 const currentTime = new Date().toLocaleString();
 ---
 
@@ -10,7 +18,14 @@ const currentTime = new Date().toLocaleString();
 		<p>Welcome to the projects page!</p>
 		<p><strong>Server time:</strong> {currentTime}</p>
 		<p><strong>Client time:</strong> <span id="client-time">Loading...</span></p>
-		<a href="/">← Back to Home</a>
+		{loginTime && <p><strong>Login time:</strong> {new Date(loginTime).toLocaleString()}</p>}
+
+		<div class="actions">
+			<a href="/">← Back to Home</a>
+			<form method="POST" action="/api/logout" style="display: inline;">
+				<button type="submit" class="logout-btn">Logout</button>
+			</form>
+		</div>
 	</main>
 </Layout>
 
@@ -38,6 +53,28 @@ const currentTime = new Date().toLocaleString();
 
 	a:hover {
 		text-decoration: underline;
+	}
+
+	.actions {
+		margin-top: 2rem;
+		display: flex;
+		gap: 1rem;
+		align-items: center;
+	}
+
+	.logout-btn {
+		background: #dc2626;
+		color: white;
+		border: none;
+		padding: 0.5rem 1rem;
+		border-radius: 6px;
+		cursor: pointer;
+		font-size: 0.9rem;
+		transition: background 0.2s;
+	}
+
+	.logout-btn:hover {
+		background: #b91c1c;
 	}
 </style>
 

@@ -1,0 +1,127 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+let errorMessage = '';
+
+// Check for error parameter from redirect
+const url = new URL(Astro.request.url);
+if (url.searchParams.get('error') === 'invalid') {
+	errorMessage = 'Invalid password';
+}
+
+// Check if already authenticated
+const isAuthenticated = await Astro.session.get('authenticated');
+if (isAuthenticated) {
+	return Astro.redirect('/projects', 302);
+}
+---
+
+<Layout>
+	<main>
+		<h1>Login Required</h1>
+		<p>Please enter the password to access protected areas.</p>
+
+		{errorMessage && (
+			<div class="error">
+				{errorMessage}
+			</div>
+		)}
+
+		<form method="POST" action="/api/login">
+			<div class="form-group">
+				<label for="password">Password:</label>
+				<input
+					type="password"
+					id="password"
+					name="password"
+					required
+					autocomplete="current-password"
+				/>
+			</div>
+			<button type="submit">Login</button>
+		</form>
+
+		<a href="/">← Back to Home</a>
+	</main>
+</Layout>
+
+<style>
+	main {
+		padding: 2rem;
+		max-width: 400px;
+		margin: 0 auto;
+		text-align: center;
+	}
+
+	h1 {
+		color: #111827;
+		margin-bottom: 1rem;
+	}
+
+	p {
+		color: #4b5563;
+		margin-bottom: 2rem;
+	}
+
+	.error {
+		background: #fee;
+		color: #c53030;
+		padding: 0.5rem;
+		border-radius: 4px;
+		margin-bottom: 1rem;
+		border: 1px solid #feb2b2;
+	}
+
+	.form-group {
+		margin-bottom: 1rem;
+		text-align: left;
+	}
+
+	label {
+		display: block;
+		margin-bottom: 0.5rem;
+		color: #374151;
+		font-weight: 500;
+	}
+
+	input {
+		width: 100%;
+		padding: 0.75rem;
+		border: 1px solid #d1d5db;
+		border-radius: 6px;
+		font-size: 1rem;
+		box-sizing: border-box;
+	}
+
+	input:focus {
+		outline: none;
+		border-color: #3245ff;
+		box-shadow: 0 0 0 3px rgba(50, 69, 255, 0.1);
+	}
+
+	button {
+		width: 100%;
+		background: linear-gradient(83.21deg, #3245ff 0%, #bc52ee 100%);
+		color: white;
+		border: none;
+		padding: 0.75rem 1.5rem;
+		border-radius: 10px;
+		font-size: 1rem;
+		cursor: pointer;
+		margin-bottom: 1rem;
+		transition: opacity 0.2s;
+	}
+
+	button:hover {
+		opacity: 0.9;
+	}
+
+	a {
+		color: #3245ff;
+		text-decoration: none;
+	}
+
+	a:hover {
+		text-decoration: underline;
+	}
+</style>
