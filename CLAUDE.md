@@ -52,6 +52,30 @@ The project implements session-based authentication using Astro's native session
 3. User can access protected routes while session is valid
 4. User clicks logout → session destroyed → redirected to home
 
+### Technical Implementation:
+
+**Session Management:**
+- Astro automatically creates HTTP-only session cookies on first `session.set()`
+- Session ID (UUID) stored in cookie, actual data stored server-side
+- Session files stored in `node_modules/.astro/sessions/[session-id]`
+- Cookie automatically included in subsequent browser requests
+
+**Login Process (POST /api/login):**
+- Form data extracted and password validated (hardcoded as "1")
+- On success: `session.set()` creates session with `authenticated: true` and `loginTime`
+- Response: 302 redirect to `/projects` with session cookie set
+- On failure: 302 redirect to `/login?error=invalid`
+
+**Logout Process (POST /api/logout):**
+- `session.destroy()` deletes session file from server
+- Browser cookie becomes invalid (points to non-existent session)
+- Response: 302 redirect to `/` (homepage)
+
+**Route Protection:**
+- Protected pages call `Astro.session.get('authenticated')`
+- If not authenticated: 302 redirect to `/login`
+- If authenticated: Render page normally
+
 ### Session Data:
 - `authenticated`: boolean flag indicating login status
 - `loginTime`: ISO timestamp of when user logged in

@@ -1,6 +1,9 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 
+// TypeScript guard: Prevent compiler warnings about undefined session
+if (!Astro.session) throw new Error('Session not available');
+
 // Check authentication using session
 const isAuthenticated = await Astro.session.get('authenticated');
 if (!isAuthenticated) {
@@ -19,9 +22,9 @@ const currentTime = new Date().toLocaleString();
 	<main>
 		<h1>Projects</h1>
 		<p>Welcome to the projects page!</p>
-		<p><strong>Server time:</strong> {currentTime}</p>
+		<p><strong>Server time (UTC):</strong> {currentTime}</p>
 		<p><strong>Client time:</strong> <span id="client-time">Loading...</span></p>
-		{loginTime && <p><strong>Login time:</strong> {new Date(loginTime).toLocaleString()}</p>}
+		{loginTime && <p><strong>Login time (UTC):</strong> {new Date(loginTime).toLocaleString()}</p>}
 
 		<div class="actions">
 			<a href="/">← Back to Home</a>
