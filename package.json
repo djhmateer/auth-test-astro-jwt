@@ -1,5 +1,5 @@
 {
-  "name": "auth-test-astro-jwt",
+  "name": "auth-test-astro-session",
   "type": "module",
   "version": "0.0.1",
   "scripts": {

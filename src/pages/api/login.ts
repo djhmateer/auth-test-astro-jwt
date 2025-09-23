@@ -5,7 +5,7 @@ export const POST: APIRoute = async ({ request, session }) => {
 	const password = formData.get('password') as string;
 
 	// Simple password check - change this password as needed
-	if (password === 'secret123') {
+	if (password === '1') {
 		const loginTime = new Date().toISOString();
 
 		// Set session authentication

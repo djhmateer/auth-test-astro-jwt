@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Commands
 
-This is an Astro project called "Auth Test Astro JWT" using pnpm as the package manager. It features session-based authentication protecting certain routes.
+This is an Astro project called "Auth Test Astro Session" using pnpm as the package manager. It features session-based authentication protecting certain routes.
 
 | Command | Purpose |
 |---------|---------|
@@ -39,7 +39,7 @@ The project uses:
 
 The project implements session-based authentication using Astro's native session API:
 
-- **Login**: `/login` - Password-protected login form (password: "secret123")
+- **Login**: `/login` - Password-protected login form (password: "1")
 - **Protected Routes**: `/projects/*` - Requires valid session to access
 - **Session Storage**: Filesystem-based sessions via Node.js adapter
 - **API Endpoints**:
