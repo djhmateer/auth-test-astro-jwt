@@ -4,11 +4,13 @@ An Astro project demonstrating session-based authentication with server-side ren
 
 ## ✨ Features
 
-- **Session-based Authentication** using Astro's built-in session API
+- **Session-based Authentication** using Astro's built-in session support
 - **Protected Routes** with automatic login redirects
+- **Redirect-after-login** functionality for seamless user experience
+- **Centralized Authentication** utility for code reusability
+- **Session Expiration Detection** with detailed logging
 - **Server-Side Rendering** with Node.js adapter
 - **Filesystem Session Storage** for persistence
-- **Simple Console Logging** for authentication events
 - **Production-ready** deployment configuration for Render.com
 
 ## 🚀 Project Structure
@@ -29,9 +31,12 @@ An Astro project demonstrating session-based authentication with server-side ren
 │   │   │   ├── login.ts      # Login API endpoint
 │   │   │   └── logout.ts     # Logout API endpoint
 │   │   ├── projects/
-│   │   │   └── index.astro   # Protected route
+│   │   │   ├── index.astro   # Protected route
+│   │   │   └── project2.astro # Additional protected route
 │   │   ├── index.astro       # Homepage
 │   │   └── login.astro       # Login form
+│   ├── utils/
+│   │   └── auth.ts           # Centralized authentication logic
 └── package.json
 ```
 
@@ -43,12 +48,13 @@ The project implements session-based authentication:
 - Visit `/login` to access the login form
 - Default password: `1`
 - Successful login creates a server-side session
-- Redirects to `/projects` after authentication
+- Redirects to originally requested page after authentication
 
 ### Protected Routes
-- All routes under `/projects/*` require authentication
-- Unauthenticated users are redirected to `/login`
-- Session data persists across requests
+- All routes under `/projects/*` require authentication (`/projects/`, `/projects/project2`)
+- Unauthenticated users are redirected to `/login?redirect=<current-path>`
+- After login, users return to their originally requested page
+- Session data persists across requests (1-day TTL)
 
 ### Logout
 - Click "Logout" button on protected pages
@@ -76,9 +82,11 @@ The project implements session-based authentication:
 - **Storage**: Session data stored server-side in filesystem
 
 **Route Protection:**
-- Protected pages call `await Astro.session.get('authenticated')`
-- Missing/invalid sessions redirect to `/login`
-- Valid sessions allow page rendering
+- Protected pages import `checkAuthentication` from `src/utils/auth.ts`
+- Centralized utility handles session validation and cookie expiration detection
+- Missing/invalid sessions redirect to `/login?redirect=<current-path>`
+- Valid sessions return authentication data (login time, current time)
+- Consistent authentication behavior across all protected routes
 
 **Logout Process:**
 - `session.destroy()` deletes session file from server
@@ -120,7 +128,7 @@ This project is configured for deployment on Render.com:
 - **Framework**: Astro v5.13.10 with SSR
 - **Runtime**: Node.js (>=18.0.0)
 - **Package Manager**: pnpm
-- **Authentication**: Astro Sessions API
+- **Authentication**: Astro Sessions
 - **Deployment**: Render.com
 - **TypeScript**: Strict configuration
 
