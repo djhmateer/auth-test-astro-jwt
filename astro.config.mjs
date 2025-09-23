@@ -10,7 +10,7 @@ export default defineConfig({
     mode: 'standalone'       // bundles deps so Render can run it easily
   }),
   session: {
-    ttl: 120               // 1 day timeout (24 hours * 60 minutes * 60 seconds)... test here with 120 seconds
+    ttl: 86400               // 1 day timeout (86400)... test here with 120 seconds
   },
   server: {
     host: '0.0.0.0',         // Bind to all interfaces for Render
