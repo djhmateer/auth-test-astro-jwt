@@ -16,7 +16,7 @@ This is an Astro project called "Auth Test Astro JWT" using pnpm as the package 
 
 ## Architecture
 
-This is a standard Astro project with the following structure:
+This is an Astro project configured for server-side rendering (SSR) with the following structure:
 
 - **src/pages/**: Route-based pages (index.astro is the homepage)
 - **src/layouts/**: Shared layout components (Layout.astro provides base HTML structure)
@@ -27,7 +27,16 @@ This is a standard Astro project with the following structure:
 The project uses:
 - TypeScript with strict configuration extending `astro/tsconfigs/strict`
 - ESM modules (`"type": "module"` in package.json)
-- Astro v5.13.10
-- Default Astro configuration (no customizations in astro.config.mjs)
+- Astro v5.13.10 with SSR mode (`output: 'server'`)
+- Node.js adapter in standalone mode for deployment
+- Server configured to bind to `0.0.0.0` for cloud deployment compatibility
+
+## Deployment
+
+Configured for Render.com deployment as a web service:
+- **Start Command**: `pnpm start` (runs `node ./dist/server/entry.mjs`)
+- **Build Output**: Server bundle in `dist/server/`
+- **Port**: Uses `process.env.PORT` or defaults to 10000
+- **Host**: Binds to `0.0.0.0` for external traffic
 
 The codebase follows Astro's file-based routing where pages in `src/pages/` become routes. Components use Astro's syntax with frontmatter for server-side logic and JSX-like templates for markup.

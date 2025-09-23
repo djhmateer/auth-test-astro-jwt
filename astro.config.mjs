@@ -9,4 +9,8 @@ export default defineConfig({
   adapter: node({
     mode: 'standalone'       // bundles deps so Render can run it easily
   }),
+  server: {
+    host: '0.0.0.0',         // Bind to all interfaces for Render
+    port: process.env.PORT ? parseInt(process.env.PORT) : 10000
+  }
 });
