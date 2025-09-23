@@ -1,11 +1,15 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+
+const currentTime = new Date().toLocaleString();
 ---
 
 <Layout>
 	<main>
 		<h1>Projects</h1>
 		<p>Welcome to the projects page!</p>
+		<p><strong>Server time:</strong> {currentTime}</p>
+		<p><strong>Client time:</strong> <span id="client-time">Loading...</span></p>
 		<a href="/">← Back to Home</a>
 	</main>
 </Layout>
@@ -36,3 +40,7 @@ import Layout from '../../layouts/Layout.astro';
 		text-decoration: underline;
 	}
 </style>
+
+<script>
+	document.getElementById('client-time').textContent = new Date().toLocaleString();
+</script>
