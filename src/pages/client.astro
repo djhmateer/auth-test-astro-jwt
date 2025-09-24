@@ -1,0 +1,47 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+console.log('Server-side log: client.astro page rendered at', new Date().toISOString());
+---
+
+<Layout title="Client Page">
+  <main>
+    <h1>Client Page</h1>
+    <p>This page demonstrates both server-side and client-side console logging.</p>
+    <p>Check your browser console and server console for log messages.</p>
+    <a href="/">← Back to Home</a>
+  </main>
+</Layout>
+
+<script>
+  console.log('Client-side log: client.astro page loaded at', new Date().toISOString());
+</script>
+
+<style>
+  main {
+    margin: auto;
+    padding: 1rem;
+    width: 800px;
+    max-width: calc(100% - 2rem);
+    color: white;
+    font-size: 20px;
+    line-height: 1.6;
+  }
+  h1 {
+    font-size: 4rem;
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    margin-bottom: 1em;
+  }
+  p {
+    margin-bottom: 1rem;
+  }
+  a {
+    color: #0070f3;
+    text-decoration: none;
+  }
+  a:hover {
+    text-decoration: underline;
+  }
+</style>
